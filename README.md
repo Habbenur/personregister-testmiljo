@@ -85,3 +85,9 @@ Projektet följer GDPR-principer genom att:
 - Erbjuda anonymisering av personuppgifter
 - Erbjuda fullständig radering av testdata
 - Köra applikationen i en isolerad testmiljö
+
+## CI/CD
+
+Projektet använder GitHub Actions för automatisk kvalitetskontroll.
+Vid varje push verifieras att koden kan köras och kompileras utan fel.
+
