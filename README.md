@@ -1,3 +1,7 @@
+---
+Projektet är skapat som en del av examinationsuppgift.
+---
+
 # Personregister i testmiljö
 
 Detta projekt är ett enkelt personregister som används i en testmiljö.
