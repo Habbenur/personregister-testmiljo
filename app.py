@@ -1,5 +1,6 @@
 import sqlite3
 import os
+import faker
 
 def init_database():
     db_path = os.getenv('DATABASE_PATH', '/data/test_users.db')
@@ -55,6 +56,8 @@ def anonymize_data():
     cursor = conn.cursor()
 
     cursor.execute('UPDATE users SET name="Anonym Användare"')
+    faker_instance = faker.Faker('sv_SE')
+    cursor.execute('UPDATE users SET email=?', (faker_instance.email(),))
     conn.commit()
     conn.close()
 
