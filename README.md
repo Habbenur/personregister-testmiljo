@@ -38,24 +38,33 @@ Applikationen:
 Kör följande kommando i projektets rotmapp:
 
 #```bash
+
 docker compose up --build
+
 Applikationen startar då i en Docker-container och skapar en databas
 med två testanvändare.
+
+Öppna en ny terminal och inne i personregister-testmiljo mappen kör den här kommandon:
+
+```bash
+
+ docker exec gdpr-user-registry python -c "import app; app.display_users()"
+
+ Två testanvändare visas i listan.
 
 ---
 
 ### GDPR-FUNKTIONER
-
-
 ### Anonymisering av användardata
 
 Alla användares namn kan anonymiseras för att förhindra identifiering
 av personuppgifter.
 
 Kommando:
-
 #```bash
+
 docker exec gdpr-user-registry python -c "import app; app.anonymize_data(); app.display_users()"
+
 Resultat:
 Användarnamn ersätts med "Anonym Användare"
 E-postadresser behålls för teständamål
@@ -68,9 +77,10 @@ All testdata kan raderas helt i enlighet med GDPR:s principer
 om rätten att bli bortglömd.
 
 Kommando:
-
 #```bash
+
 docker exec gdpr-user-registry python -c "import app; app.clear_test_data(); app.display_users()"
+
 Resultat:
 Alla poster tas bort från databasen
 Inga personuppgifter finns kvar
