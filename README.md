@@ -241,3 +241,88 @@ Detta säkerställer långsiktig kvalitet och GDPR-efterlevnad
 
 
 Projektet visar ett rent, testbart och GDPR-medvetet arbetssätt för hantering av personuppgifter i utvecklings- och testmiljöer med moderna verktyg och bästa praxis.
+
+
+# Docker Desktop – Användning (visuellt demonstrationsläge)
+
+Projektet stöder även ett Docker Desktop-läge för visuell demonstration och manuell hantering av containerns livscykel.
+
+Detta läge är avsett för demonstration och examination.
+
+# Starta Docker Desktop-läge
+
+Från projektets rotkatalog:
+
+docker compose --profile desktop up -d
+
+
+Resultat:
+
+En långlivad container med namnet personregister-desktop startas
+
+Containern visas i Docker Desktop
+
+Containern kan manuellt startas och stoppas via Docker Desktop-gränssnittet
+
+# Verifiera att containern körs
+docker ps
+
+
+Förväntat resultat:
+
+personregister-desktop   Up ...
+
+# Kör kommandon inuti containern
+
+Alla applikationskommandon kan köras inuti den aktiva containern med docker exec.
+
+# Full demonstrationssekvens för Docker Desktop:
+- Starta Docker Desktop-läge
+docker compose --profile desktop up -d
+
+- Skapa rå testdata
+docker exec personregister-desktop python app.py seed -n 5
+
+- Visa rå data
+docker exec personregister-desktop python app.py list
+
+- Kontrollera (icke-anonymiserad data)
+docker exec personregister-desktop python app.py check
+
+- Anonymisera data
+docker exec personregister-desktop python app.py anonymize
+
+- Verifiera anonymisering
+docker exec personregister-desktop python app.py check
+
+- Radera all testdata
+docker exec personregister-desktop python app.py clear
+docker exec personregister-desktop python app.py check
+
+- Stoppa Docker Desktop-läge
+docker compose --profile desktop down
+
+
+Detta gör det möjligt att inspektera applikationens beteende utan att starta om containern.
+
+Resultat:
+
+Containern stoppas och tas bort
+
+Data som lagras i Docker-volymer bevaras
+
+# Information
+
+Docker Desktop-läget använder samma Docker-image och datavolym som standardläget
+
+Ingen extra konfiguration krävs
+
+Läget påverkar inte CI/CD eller automatiska tester
+
+# När ska detta läge användas?
+
+Visuell demonstration vid examination
+
+Manuell kontroll av containerns livscykel
+
+Visa start/stopp-beteende i Docker Desktop

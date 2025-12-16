@@ -9,5 +9,17 @@ services:
     environment:
       - DATABASE_PATH=/data/test_users.db
 
+
+  app-desktop:
+    build: .
+    profiles: ["desktop"]
+    container_name: personregister-desktop
+    environment:
+      - DATABASE_PATH=/data/test_users.db
+    volumes:
+      - database_data:/data
+    command: ["sh", "-lc", "echo 'Desktop mode running'; tail -f /dev/null"]
+
+
 volumes:
   database_data:
