@@ -16,13 +16,13 @@ Säkerställa att inga personuppgifter lämnas oavsiktligt oskyddade
 
 Tydligt separera:
 
-rå data
+- rå data
 
-anonymisering
+- anonymisering
 
-verifiering
+- verifiering
 
-radering
+- radering
 
 Erbjuda ett reproducerbart arbetsflöde via Docker
 
@@ -61,64 +61,60 @@ E-post	Hashat värde som slutar med @anon.test
 Personnummer	000000-0000
 Adress	REDACTED
 
-# Användning (Usage)
+# ANVÄNDNING (USAGE)
 
 Applikationen körs helt via Docker.
 Ingen lokal Python-installation krävs.
 
-# Förutsättningar
+- Förutsättningar
 
     Docker
 
     Docker Compose
 
-# Bygg applikationen
+- Bygg applikationen
 
 bash
 docker compose build --no-cache
 
-# Skapa rå testdata (Faker)
+- Skapa rå testdata (Faker)
 Rå (icke-anonymiserad) testdata skapas endast explicit med:
 
 bash
 docker compose run --rm app python app.py seed -n 5
 Detta steg finns för att tydligt kunna demonstrera skillnaden mellan rå och anonymiserad data.
 
-# Lista lagrad data
+- Lista lagrad data
 bash
 docker compose run --rm app python app.py list
-
 
 Före anonymisering → realistisk testdata
 Efter anonymisering → endast skyddade värden
 
-# Kontrollera anonymiseringsstatus (read-only)
+- Kontrollera anonymiseringsstatus (read-only)
 
 bash
 docker compose run --rm app python app.py check
-
 
 Exempel på utdata:
 total_test_rows=5 non_anonymized=5
 Detta kommando ändrar aldrig data och fungerar som en revisions-/kontrollfunktion.
 
-# Anonymisera testdata
+- Anonymisera testdata
 
 bash
 docker compose run --rm app python app.py anonymize
 
-
 All testdata anonymiseras i ett kontrollerat och explicit steg.
 
-# Radera all testdata (Right to Erasure – GDPR)
+- Radera all testdata (Right to Erasure – GDPR)
 
 bash
 docker compose run --rm app python app.py clear
 
-
 Detta tar permanent bort all testdata från databasen.
 
-# Köra automatiska tester
+- Köra automatiska tester
 
 bash
 docker compose run --rm app python app.py --test
@@ -126,13 +122,13 @@ docker compose run --rm app python app.py --test
 
 # Tester verifierar:
 
-skapande av testdata
+- skapande av testdata
 
-anonymiseringslogik
+- anonymiseringslogik
 
-guard-beteende
+- guard-beteende
 
-dataintegritet
+- dataintegritet
 
 # CI/CD
 
@@ -144,44 +140,17 @@ varje pull request
 
 Detta säkerställer att anonymiseringslogiken fortsätter fungera korrekt över tid.
 
-# Demo-steg (för användare)
-
-Följande steg demonstrerar hela GDPR-livscykeln:
-
-# Ren start
-docker compose down -v
-docker compose build --no-cache
-
-# Skapa rå testdata
-docker compose run --rm app python app.py seed -n 5
-
-# Visa rå data
-docker compose run --rm app python app.py list
-
-# Kontrollera status (icke-anonymiserad)
-docker compose run --rm app python app.py check
-
-# Anonymisera data
-docker compose run --rm app python app.py anonymize
-
-# Verifiera anonymisering
-docker compose run --rm app python app.py check
-
-# Radera all testdata
-docker compose run --rm app python app.py clear
-docker compose run --rm app python app.py check
-
 # Demonstrerade GDPR-principer
 
-Dataminimering
+- Dataminimering
 
-Explicit anonymisering
+- Explicit anonymisering
 
-Spårbarhet och kontroll (read-only checks)
+- Spårbarhet och kontroll (read-only checks)
 
-Rätten att bli raderad (Right to Erasure)
+- Rätten att bli raderad (Right to Erasure)
 
-Automatisering och reproducerbarhet
+- Automatisering och reproducerbarhet
 
 # Designbeslut
 
@@ -211,7 +180,7 @@ Detta säkerställs via följande trigger i workflow-konfigurationen:
     yaml
     on: [push, pull_request]
 
-Vad testas?
+# Vad testas?
 
 De automatiska testerna verifierar att:
 
@@ -243,7 +212,7 @@ Detta säkerställer långsiktig kvalitet och GDPR-efterlevnad
 Projektet visar ett rent, testbart och GDPR-medvetet arbetssätt för hantering av personuppgifter i utvecklings- och testmiljöer med moderna verktyg och bästa praxis.
 
 
-# Docker Desktop – Användning (visuellt demonstrationsläge)
+# DOCKER DESKTOP – ANVÄNDNING (visuellt demonstrationsläge)
 
 Projektet stöder även ett Docker Desktop-läge för visuell demonstration och manuell hantering av containerns livscykel.
 
