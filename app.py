@@ -11,6 +11,7 @@ Personregister i testmiljö – GDPR-anpassad testdata med Faker
 from __future__ import annotations
 
 import argparse
+import cmd
 import datetime as dt
 import hashlib
 import os
@@ -250,21 +251,15 @@ def check_anonymization(conn: sqlite3.Connection) -> Tuple[int, int]:
     return total, not_anon
 
 
-def anonymization_guard(conn: sqlite3.Connection, seed_rows_if_empty: int = 10) -> None:
-    # Ensure there is some testdata (raw), then enforce anonymization
-    cur = conn.cursor()
-    cur.execute("SELECT COUNT(*) AS c FROM users WHERE is_test_data = 1")
-    count = int(cur.fetchone()["c"])
-
-    if count == 0 and seed_rows_if_empty > 0:
-        inserted = seed_raw_test_data(conn, seed_rows_if_empty)
-        print(f"[seed] inserted_raw={inserted}")
-
+def anonymization_guard(conn: sqlite3.Connection) -> None:
+   
+    # self-startup kontrol
     _, not_anon = check_anonymization(conn)
     if not_anon > 0:
         fixed = anonymize_non_anonymized_test_rows(conn)
         print(f"[guard] fixed_startup={fixed}")
 
+    # daglik kontrol
     today = dt.datetime.now().date().isoformat()
     last = meta_get(conn, "last_anonym_check_date")
     if last == today:
@@ -277,6 +272,7 @@ def anonymization_guard(conn: sqlite3.Connection, seed_rows_if_empty: int = 10) 
 
     print(f"[guard] daily_ok total_test_rows={total}")
     meta_set(conn, "last_anonym_check_date", today)
+
 
 
 # -----------------------------
@@ -337,16 +333,18 @@ class AppTests(unittest.TestCase):
         self.assertEqual(total2, 5)
         self.assertEqual(not_anon2, 0)
 
-    def test_guard_seeds_and_enforces(self) -> None:
-        anonymization_guard(self.conn, seed_rows_if_empty=3)
+    def test_guard_enforces_only(self) -> None:
+    # lägger in rå data
+        seed_raw_test_data(self.conn, n=3)
+
+    # guarden körs och fixar
+        anonymization_guard(self.conn)
+
         total, not_anon = check_anonymization(self.conn)
         self.assertEqual(total, 3)
         self.assertEqual(not_anon, 0)
 
 
-# -----------------------------
-# CLI
-# -----------------------------
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(description="GDPR-friendly test person register (SQLite) with Faker.")
     p.add_argument("--db", default=DEFAULT_DB_PATH, help="Path to SQLite DB (default: env DATABASE_PATH or ./test_users.db)")
@@ -376,9 +374,15 @@ def main(argv: list[str]) -> int:
 
     with connect(args.db) as conn:
         init_db(conn)
-        anonymization_guard(conn, seed_rows_if_empty=10)
 
         cmd = args.cmd or "list"
+
+# - seed/list komutları ham datayı gösterebilsin diye guard çalıştırma
+# - diğer komutlarda (check/anonymize/clear ve default) guard çalıştır
+        # Demo için: seed/list/check komutları veri değiştirmesin
+        if cmd not in ("seed", "list", "check"):
+            anonymization_guard(conn)
+
 
         if cmd == "init":
             print("DB initialized.")

@@ -2,102 +2,111 @@
 Projektet är skapat som en del av examinationsuppgift.
 ---
 
-# Personregister i testmiljö
+GDPR – Anonymiserad testdata (Faker-baserad)
+Detta projekt använder Faker för att skapa realistisk testdata som därefter automatiskt anonymiseras enligt GDPR-principer.
 
-Detta projekt är ett enkelt personregister som används i en testmiljö.
-Syftet är att visa hur testdata kan hanteras på ett GDPR-kompatibelt sätt.
+🔹 Hur fungerar det?
+Vid första körning skapas rå testdata (namn, e-post, personnummer, adress) med hjälp av Faker.
+All testdata anonymiseras automatiskt:
+name → Anonym Användare
+email → hashad identifierare (@anon.test)
+personnummer → 000000-0000
+address → REDACTED
+En anonymiserings-guard körs:
+vid varje uppstart
+samt minst en gång per dag
+Om någon testpost inte är anonymiserad korrigeras den automatiskt.
 
-## Teknisk översikt
+🔹 Automatiska kontroller
+Projektet innehåller enhetstester som verifierar att:
+rå testdata kan skapas
+anonymisering fungerar korrekt
+ingen icke-anonym testdata finns kvar
+Tester kan köras lokalt eller via Docker:
 
-Projektet är byggt med följande tekniker:
+docker compose run --rm app python app.py --test
 
-- Python – applikationslogik
-- SQLite – enkel lokal databas
-- Docker & Docker Compose – körning i isolerad miljö
-- Git & GitHub – versionshantering
+🔹 CI/CD
+Vid varje push eller pull request körs tester automatiskt via GitHub Actions för att säkerställa att:
+beroenden installeras korrekt
+applikationen kompilerar
+anonymiseringslogiken fungerar som förväntat
 
-## Funktionalitet
+Usage
 
-Applikationen:
+Projektet körs helt via Docker och kräver inga lokala Python-installationer utöver Docker.
 
-- Skapar en användartabell i en SQLite-databas
-- Lägger till testanvändare om databasen är tom
-- Visar alla användare
-- Möjliggör anonymisering av användardata (GDPR)
-- Möjliggör radering av all testdata (GDPR)
+🔹 Förutsättningar
 
-## Så här kör du projektet
+Docker
 
-### Förutsättningar
+Docker Compose
 
-- Docker Desktop installerat och igång
-- Git
+🔹 Bygg Docker-imagen
 
-### Starta applikationen med Docker
+I projektets rotkatalog:
 
-Kör följande kommando i projektets rotmapp:
+    docker compose build --no-cache
 
-#```bash
 
-docker compose up --build
+--no-cache säkerställer att alla beroenden (t.ex. Faker) installeras korrekt.
 
-Applikationen startar då i en Docker-container och skapar en databas
-med två testanvändare.
+🔹 Kör applikationen (engångskörning)
 
-Öppna en ny terminal och inne i personregister-testmiljo mappen kör den här kommandon:
+Applikationen körs som engångscontainer enligt CI/CD-principer:
 
-```bash
+    docker compose run --rm app python app.py
 
- docker exec gdpr-user-registry python -c "import app; app.display_users()"
 
- Två testanvändare visas i listan.
+Vid körning:
 
----
+testdata skapas automatiskt om databasen är tom
 
-### GDPR-FUNKTIONER
-### Anonymisering av användardata
+anonymisering appliceras
 
-Alla användares namn kan anonymiseras för att förhindra identifiering
-av personuppgifter.
+GDPR-kontroll utförs
 
-Kommando:
-#```bash
+🔹 Vanliga kommandon
+Skapa rå testdata (innan anonymisering)
 
-docker exec gdpr-user-registry python -c "import app; app.anonymize_data(); app.display_users()"
+    docker compose run --rm app python app.py seed -n 10
 
-Resultat:
-Användarnamn ersätts med "Anonym Användare"
-E-postadresser behålls för teständamål
+Anonymisera all testdata
 
----
+    docker compose run --rm app python app.py anonymize
 
-### Radering av testdata
+Kontrollera anonymiseringsstatus
 
-All testdata kan raderas helt i enlighet med GDPR:s principer
-om rätten att bli bortglömd.
+    docker compose run --rm app python app.py check
 
-Kommando:
-#```bash
+Lista testdata (endast anonymiserad data)
 
-docker exec gdpr-user-registry python -c "import app; app.clear_test_data(); app.display_users()"
+    docker compose run --rm app python app.py list
 
-Resultat:
-Alla poster tas bort från databasen
-Inga personuppgifter finns kvar
+Rensa all testdata
 
----
+    docker compose run --rm app python app.py clear
 
-## GDPR-efterlevnad
+🔹 Köra tester
 
-Projektet följer GDPR-principer genom att:
+Projektet innehåller automatiska enhetstester för anonymisering och dataintegritet.
 
-- Använda testdata istället för produktionsdata
-- Erbjuda anonymisering av personuppgifter
-- Erbjuda fullständig radering av testdata
-- Köra applikationen i en isolerad testmiljö
+Kör tester lokalt via Docker:
 
-## CI/CD
 
-Projektet använder GitHub Actions för automatisk kvalitetskontroll.
-Vid varje push verifieras att koden kan köras och kompileras utan fel.
+    docker compose run --rm app python app.py --test
 
+🔹 CI/CD
+
+Alla tester körs automatiskt via GitHub Actions vid varje push eller pull request.
+Detta säkerställer att anonymiseringslogiken fortsätter fungera korrekt över tid.
+
+✅ Sammanfattning
+
+Ingen lokal Python-konfiguration krävs
+
+Alla kommandon körs isolerat i Docker
+
+Testdata anonymiseras automatiskt
+
+GDPR-krav verifieras kontinuerligt via tester och CI/CD
