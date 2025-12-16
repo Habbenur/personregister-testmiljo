@@ -1,9 +1,18 @@
+# Kullanılacak temel imaj
 FROM python:3.9-slim
 
+# Çalışma dizinini belirle
 WORKDIR /app
 
-COPY app.py .
+# Gereksinimlerinizi kopyalayın
+COPY requirements.txt .
 
-RUN mkdir /data
+# Gerekli Python paketlerini yükleyin
+RUN pip install --no-cache-dir -r requirements.txt
 
-CMD ["python", "app.py"]
+# Uygulama dosyasını kopyalayın
+COPY . .
+
+# Uygulamayı çalıştırmak için komut
+CMD ["python", "-c", "import time; print('Container ready'); time.sleep(10**9)"]
+
