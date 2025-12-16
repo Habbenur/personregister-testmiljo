@@ -377,14 +377,9 @@ def main(argv: list[str]) -> int:
 
         cmd = args.cmd or "list"
 
-# - seed/list komutları ham datayı gösterebilsin diye guard çalıştırma
-# - diğer komutlarda (check/anonymize/clear ve default) guard çalıştır
-        # Demo için: seed/list/check komutları veri değiştirmesin
         # Demo için: seed/list/check/anonymize komutları veri akışını "görünür" kılmalı
         if cmd not in ("seed", "list", "check", "anonymize"):
             anonymization_guard(conn)
-
-
 
         if cmd == "init":
             print("DB initialized.")
