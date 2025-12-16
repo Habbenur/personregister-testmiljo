@@ -345,6 +345,10 @@ class AppTests(unittest.TestCase):
         self.assertEqual(not_anon, 0)
 
 
+'''Funktionen build_parser() definierar programmets kommandoradsgränssnitt och 
+specificerar vilka kommandon och argument applikationen accepterar. Gör koden mer
+läsbar och underlättar hanteringen av användarinmatning.'''
+
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(description="GDPR-friendly test person register (SQLite) with Faker.")
     p.add_argument("--db", default=DEFAULT_DB_PATH, help="Path to SQLite DB (default: env DATABASE_PATH or ./test_users.db)")
@@ -377,7 +381,7 @@ def main(argv: list[str]) -> int:
 
         cmd = args.cmd or "list"
 
-        # Demo için: seed/list/check/anonymize komutları veri akışını "görünür" kılmalı
+        # Anonymization guard för alla kommandon utom de som skapar eller hanterar rå data
         if cmd not in ("seed", "list", "check", "anonymize"):
             anonymization_guard(conn)
 
