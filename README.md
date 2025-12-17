@@ -9,7 +9,7 @@ Detta projekt demonstrerar hur personuppgifter kan hanteras säkert och kontroll
 Fokus ligger på GDPR-anpassad hantering av testdata, inte på produktionssystem.
 
 # Projektmål
-
+#Den är en kommentar
 Skapa realistisk testdata med Faker
 
 Säkerställa att inga personuppgifter lämnas oavsiktligt oskyddade
